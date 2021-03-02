@@ -5,22 +5,42 @@ import org.geektimes.projects.user.domain.User;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 public class DBConnectionManager {
 
     private Connection connection;
 
-    public void setConnection(Connection connection) {
-        this.connection = connection;
-    }
-
     public Connection getConnection() {
+        if (connection == null) {
+            synchronized (DBConnectionManager.class) {
+                try {
+                    Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                String databaseURL = "jdbc:derby:~/db/user-platform;create=true";
+                Statement statement = null;
+                try {
+                    this.connection = DriverManager.getConnection(databaseURL);
+                    statement = connection.createStatement();
+                    statement.execute(CREATE_USERS_TABLE_DDL_SQL);
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
+                } finally {
+                    try {
+                        if (statement != null) {
+                            statement.close();
+                        }
+                    } catch (SQLException sqlException) {
+                        //ignore
+                    }
+                }
+            }
+        }
         return this.connection;
     }
 
@@ -60,7 +80,7 @@ public class DBConnectionManager {
 //        Driver driver = DriverManager.getDriver("jdbc:derby:/db/user-platform;create=true");
 //        Connection connection = driver.connect("jdbc:derby:/db/user-platform;create=true", new Properties());
 
-        String databaseURL = "jdbc:derby:/db/user-platform;create=true";
+        String databaseURL = "jdbc:derby:~/db/user-platform;create=true";
         Connection connection = DriverManager.getConnection(databaseURL);
 
         Statement statement = connection.createStatement();

@@ -8,7 +8,9 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -43,7 +45,11 @@ public class DatabaseUserRepository implements UserRepository {
 
     @Override
     public boolean save(User user) {
-        return false;
+        return executeInsert(INSERT_USER_DML_SQL, COMMON_EXCEPTION_HANDLER,
+                user.getName(),
+                user.getPassword(),
+                user.getEmail(),
+                user.getPhoneNumber());
     }
 
     @Override
@@ -99,6 +105,28 @@ public class DatabaseUserRepository implements UserRepository {
         }, e -> {
             // 异常处理
         });
+    }
+
+
+    protected Boolean executeInsert(String sql, Consumer<Throwable> exceptionHandler, Object... args) {
+        Connection connection = getConnection();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            for (int i = 0; i < args.length; i++) {
+                Class argType = args[i].getClass();
+                Class wrapperType = wrapperToPrimitive(argType);
+                if (wrapperType == null) {
+                    wrapperType = argType;
+                }
+                String methodName = preparedStatementMethodMappings.get(wrapperType);
+                Method method = preparedStatement.getClass().getMethod(methodName, int.class, wrapperType);
+                method.invoke(preparedStatement, i + 1, args[i]);
+            }
+            return preparedStatement.executeUpdate() == 1;
+        } catch (Throwable e) {
+            exceptionHandler.accept(e);
+        }
+        return Boolean.FALSE;
     }
 
     /**
