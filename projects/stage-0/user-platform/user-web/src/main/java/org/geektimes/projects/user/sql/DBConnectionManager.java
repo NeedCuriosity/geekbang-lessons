@@ -29,7 +29,9 @@ public class DBConnectionManager {
                     statement = connection.createStatement();
                     statement.execute(CREATE_USERS_TABLE_DDL_SQL);
                 } catch (SQLException sqlException) {
-                    sqlException.printStackTrace();
+                    if (!sqlException.getMessage().contains("already exists")) {
+                        sqlException.printStackTrace();
+                    }
                 } finally {
                     try {
                         if (statement != null) {
