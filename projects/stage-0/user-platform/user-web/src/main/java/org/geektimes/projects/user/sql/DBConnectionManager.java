@@ -14,30 +14,37 @@ public class DBConnectionManager {
 
     private Connection connection;
 
-    public Connection getConnection() {
-        if (connection == null) {
-            synchronized (DBConnectionManager.class) {
-                String databaseURL = "jdbc:derby:~/db/user-platform;create=true";
-                Statement statement = null;
-                try {
-                    this.connection = DriverManager.getConnection(databaseURL);
-                    statement = connection.createStatement();
-                    statement.execute(CREATE_USERS_TABLE_DDL_SQL);
-                } catch (SQLException sqlException) {
-                    if (!sqlException.getMessage().contains("already exists")) {
-                        sqlException.printStackTrace();
-                    }
-                } finally {
-                    try {
-                        if (statement != null) {
-                            statement.close();
-                        }
-                    } catch (SQLException sqlException) {
-                        //ignore
-                    }
+    private static DBConnectionManager manager = new DBConnectionManager();
+
+    public static DBConnectionManager getInstance() {
+        return manager;
+    }
+
+    private DBConnectionManager(){};
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+        Statement statement = null;
+        try {
+            ;
+            statement = connection.createStatement();
+            statement.execute(CREATE_USERS_TABLE_DDL_SQL);
+        } catch (SQLException sqlException) {
+            if (!sqlException.getMessage().contains("already exists")) {
+                sqlException.printStackTrace();
+            }
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
                 }
+            } catch (SQLException sqlException) {
+                //ignore
             }
         }
+    }
+
+    public Connection getConnection() {
         return this.connection;
     }
 

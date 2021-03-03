@@ -60,6 +60,10 @@
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
 
+    <listener>
+        <listener-class>org.geektimes.projects.user.web.listener.DBConnectionInitializerListener</listener-class>
+    </listener>
+
 
     <jsp-config>
         <jsp-property-group>
@@ -85,11 +89,11 @@
         <welcome-file>/index.jsp</welcome-file>
     </welcome-file-list>
 
-<!--    <resource-ref>-->
-<!--        <description>DB Connection</description>-->
-<!--        <res-ref-name>jdbc/UserPlatformDB</res-ref-name>-->
-<!--        <res-type>javax.sql.DataSource</res-type>-->
-<!--        <res-auth>Container</res-auth>-->
-<!--    </resource-ref>-->
+    <resource-ref>
+        <description>DB Connection</description>
+        <res-ref-name>jdbc/UserPlatformDB</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
 
 </web-app>

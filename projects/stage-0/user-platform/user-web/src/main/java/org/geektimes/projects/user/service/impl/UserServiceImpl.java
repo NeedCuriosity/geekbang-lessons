@@ -12,7 +12,7 @@ import org.geektimes.projects.user.sql.DBConnectionManager;
 public class UserServiceImpl implements UserService {
 
     private DatabaseUserRepository userRepository =
-            new DatabaseUserRepository(new DBConnectionManager());
+            new DatabaseUserRepository(DBConnectionManager.getInstance());
 
     @Override
     public boolean register(User user) {
