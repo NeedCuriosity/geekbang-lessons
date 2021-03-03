@@ -15,6 +15,7 @@ public class DBConnectionInitializerListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        System.out.println("===========contextInitialized==============");
         try {
             Context context = new InitialContext();
             Context envContext = (Context) context.lookup("java:comp/env");
@@ -28,6 +29,7 @@ public class DBConnectionInitializerListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-
+        System.out.println("===========contextDestroyed==============");
+        DBConnectionManager.getInstance().releaseConnection();
     }
 }

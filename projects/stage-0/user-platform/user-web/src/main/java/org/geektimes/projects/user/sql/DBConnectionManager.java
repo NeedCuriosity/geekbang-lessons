@@ -20,28 +20,21 @@ public class DBConnectionManager {
         return manager;
     }
 
-    private DBConnectionManager(){};
+    private DBConnectionManager() {
+    }
+
+    ;
 
     public void setConnection(Connection connection) {
         this.connection = connection;
-        Statement statement = null;
-        try {
-            ;
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
             statement.execute(CREATE_USERS_TABLE_DDL_SQL);
         } catch (SQLException sqlException) {
             if (!sqlException.getMessage().contains("already exists")) {
                 sqlException.printStackTrace();
             }
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException sqlException) {
-                //ignore
-            }
         }
+        //ignore
     }
 
     public Connection getConnection() {
