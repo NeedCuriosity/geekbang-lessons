@@ -17,11 +17,6 @@ public class DBConnectionManager {
     public Connection getConnection() {
         if (connection == null) {
             synchronized (DBConnectionManager.class) {
-                try {
-                    Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
                 String databaseURL = "jdbc:derby:~/db/user-platform;create=true";
                 Statement statement = null;
                 try {
