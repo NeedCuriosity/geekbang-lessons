@@ -75,6 +75,7 @@ public class FrontControllerServlet extends HttpServlet {
             }
             controllersMapping.put(requestPath, controller);
         }
+        servletContext.removeAttribute("controllers");
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.geektimes.projects.user.domain;
 
+import org.geektimes.validator.bean.validation.UserValid;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ import static javax.persistence.GenerationType.AUTO;
  *
  * @since 1.0
  */
+@UserValid
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
@@ -28,14 +30,12 @@ public class User implements Serializable {
     private String name;
 
     @Column
-    @Size(max = 32,min = 6)
     private String password;
 
     @Column
     private String email;
 
     @Column
-    @Size(max = 11,min = 11)
     private String phoneNumber;
 
     public Long getId() {
