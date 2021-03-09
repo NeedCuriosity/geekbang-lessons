@@ -26,6 +26,16 @@
               type="org.geektimes.projects.user.service.impl.UserServiceImpl"
               factory="org.apache.naming.factory.BeanFactory"/>
 
+    <Resource name="bean/RegisterController"
+              auth="Container"
+              type="org.geektimes.projects.user.web.controller.RegisterController"
+              factory="org.apache.naming.factory.BeanFactory"/>
+
+    <Resource name="bean/HelloWorldController"
+              auth="Container"
+              type="org.geektimes.projects.user.web.controller.HelloWorldController"
+              factory="org.apache.naming.factory.BeanFactory"/>
+
     <Resource name="bean/DatabaseUserRepository"
               auth="Container"
               type="org.geektimes.projects.user.repository.DatabaseUserRepository"

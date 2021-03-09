@@ -2,6 +2,7 @@ package org.geektimes.projects.user.context;
 
 import org.geektimes.function.ThrowableAction;
 import org.geektimes.function.ThrowableFunction;
+import org.geektimes.web.mvc.controller.Controller;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,6 +30,7 @@ public class ComponentContext {
     private Context envContext;
     //缓存
     private Map<String, Object> componentMap = new LinkedHashMap<>();
+    private Set<Controller> controllerSet = new LinkedHashSet<>();
     private Map<Object, List<Method>> preDestroyMap = new LinkedHashMap<>();
 
 
@@ -43,6 +45,7 @@ public class ComponentContext {
         intEnvContext();
         instantiateComponents();
         initializeComponents();
+        servletContext.setAttribute("controllers", controllerSet);
     }
 
 
@@ -50,6 +53,7 @@ public class ComponentContext {
         componentMap.values().forEach(component -> {
             Class<?> componentClass = component.getClass();
             injectComponent(component, componentClass);
+
             processPostConstruct(component, componentClass);
             List<Method> method = findPreDestroyMethod(component, componentClass);
             if (method.size() > 0) {
@@ -96,6 +100,9 @@ public class ComponentContext {
                 field.set(component, componentMap.get(name));
             } catch (IllegalAccessException e) {
                 //ignore
+            }
+            if (component instanceof Controller) {
+                controllerSet.add((Controller) component);
             }
         });
     }

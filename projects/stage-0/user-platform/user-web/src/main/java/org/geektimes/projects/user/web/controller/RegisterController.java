@@ -5,6 +5,7 @@ import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.service.UserService;
 import org.geektimes.web.mvc.controller.PageController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
@@ -21,9 +22,11 @@ import java.util.Set;
 @Path("/register")
 public class RegisterController implements PageController {
 
-    UserService userService = ComponentContext.getInstance().getComponent("bean/UserService");
+    @Resource(name = "bean/UserService")
+    private UserService userService;
 
-    private Validator validator = ComponentContext.getInstance().getComponent("bean/Validator");
+    @Resource(name = "bean/Validator")
+    private Validator validator;
 
     @POST
     @Override
