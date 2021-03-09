@@ -5,14 +5,16 @@ import org.geektimes.projects.user.repository.DatabaseUserRepository;
 import org.geektimes.projects.user.service.UserService;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 
+import javax.annotation.Resource;
+
 /**
  * @author zhouzy
  * @since 2021-03-02
  */
 public class UserServiceImpl implements UserService {
 
-    private DatabaseUserRepository userRepository =
-            new DatabaseUserRepository(DBConnectionManager.getInstance());
+    @Resource(name = "bean/DatabaseUserRepository")
+    private DatabaseUserRepository userRepository;
 
     @Override
     public boolean register(User user) {

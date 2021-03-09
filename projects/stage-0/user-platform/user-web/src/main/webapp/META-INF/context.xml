@@ -1,10 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-	<Resource name="jdbc/UserPlatformDB"
-              type="javax.sql.DataSource"  auth="Container"
+
+    <Resource name="jdbc/UserPlatformDB"
+              type="javax.sql.DataSource" auth="Container"
               description="Derby database for User Platform"
               maxActive="100" maxIdle="30" maxWait="10000"
-              username="" password="" 
+              username="" password=""
               driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
               url="jdbc:derby:Databases/UserPlatformDB;create=true"/>
+
+    <Resource name="bean/DBConnectionManager"
+              auth="Container"
+              type="org.geektimes.projects.user.sql.DBConnectionManager"
+              factory="org.apache.naming.factory.BeanFactory"/>
+
+    <Resource name="bean/EntityManager"
+              auth="Container"
+              type="org.geektimes.projects.user.orm.jpa.DelegatingDBManager"
+              persistenceUnitName="emf"
+              propertiesLocation="META-INF/jpa-datasource.properties"
+              factory="org.apache.naming.factory.BeanFactory"/>
+
+    <Resource name="bean/UserService"
+              auth="Container"
+              type="org.geektimes.projects.user.service.impl.UserServiceImpl"
+              factory="org.apache.naming.factory.BeanFactory"/>
+
+    <Resource name="bean/DatabaseUserRepository"
+              auth="Container"
+              type="org.geektimes.projects.user.repository.DatabaseUserRepository"
+              factory="org.apache.naming.factory.BeanFactory"/>
 </Context>

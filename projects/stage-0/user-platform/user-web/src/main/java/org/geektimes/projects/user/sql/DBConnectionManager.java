@@ -2,6 +2,9 @@ package org.geektimes.projects.user.sql;
 
 import org.geektimes.projects.user.domain.User;
 
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.sql.DataSource;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -12,43 +15,24 @@ import java.util.Map;
 
 public class DBConnectionManager {
 
-    private Connection connection;
+    @Resource(name = "jdbc/UserPlatformDB")
+    private DataSource dataSource;
 
-    private static DBConnectionManager manager = new DBConnectionManager();
-
-    public static DBConnectionManager getInstance() {
-        return manager;
-    }
-
-    private DBConnectionManager() {
-    }
-
-    ;
-
-    public void setConnection(Connection connection) {
-        this.connection = connection;
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(CREATE_USERS_TABLE_DDL_SQL);
-        } catch (SQLException sqlException) {
-            if (!sqlException.getMessage().contains("already exists")) {
-                sqlException.printStackTrace();
-            }
-        }
-        //ignore
-    }
+    @Resource(name = "bean/EntityManager")
+    private EntityManager entityManager;
 
     public Connection getConnection() {
-        return this.connection;
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+        return connection;
     }
 
-    public void releaseConnection() {
-        if (this.connection != null) {
-            try {
-                this.connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e.getCause());
-            }
-        }
+    public EntityManager getEntityManager() {
+        return this.entityManager;
     }
 
     public static final String DROP_USERS_TABLE_DDL_SQL = "DROP TABLE users";

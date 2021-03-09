@@ -1,8 +1,8 @@
 package org.geektimes.projects.user.web.controller;
 
+import org.geektimes.projects.user.context.ComponentContext;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.service.UserService;
-import org.geektimes.projects.user.service.impl.UserServiceImpl;
 import org.geektimes.web.mvc.controller.PageController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +17,7 @@ import javax.ws.rs.Path;
 @Path("/register")
 public class RegisterController implements PageController {
 
-    UserService userService = new UserServiceImpl();
+    UserService userService = ComponentContext.getInstance().getComponent("bean/UserService");
 
     @POST
     @Override

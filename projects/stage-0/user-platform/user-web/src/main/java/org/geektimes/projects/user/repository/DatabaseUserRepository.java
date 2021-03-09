@@ -4,6 +4,7 @@ import org.geektimes.function.ThrowableFunction;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 
+import javax.annotation.Resource;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -22,6 +23,9 @@ public class DatabaseUserRepository implements UserRepository {
 
     private static Logger logger = Logger.getLogger(DatabaseUserRepository.class.getName());
 
+    @Resource(name = "bean/DBConnectionManager")
+    private DBConnectionManager dbConnectionManager;
+
     /**
      * 通用处理方式
      */
@@ -33,23 +37,14 @@ public class DatabaseUserRepository implements UserRepository {
 
     public static final String QUERY_ALL_USERS_DML_SQL = "SELECT id,name,password,email,phoneNumber FROM users";
 
-    private final DBConnectionManager dbConnectionManager;
-
-    public DatabaseUserRepository(DBConnectionManager dbConnectionManager) {
-        this.dbConnectionManager = dbConnectionManager;
-    }
-
     private Connection getConnection() {
         return dbConnectionManager.getConnection();
     }
 
     @Override
     public boolean save(User user) {
-        return executeInsert(INSERT_USER_DML_SQL, COMMON_EXCEPTION_HANDLER,
-                user.getName(),
-                user.getPassword(),
-                user.getEmail(),
-                user.getPhoneNumber());
+        dbConnectionManager.getEntityManager().persist(user);
+        return true;
     }
 
     @Override
