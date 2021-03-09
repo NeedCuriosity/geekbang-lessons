@@ -1,6 +1,11 @@
 package org.geektimes.projects.user.domain;
 
+import org.hibernate.validator.constraints.Range;
+
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -23,12 +28,14 @@ public class User implements Serializable {
     private String name;
 
     @Column
+    @Size(max = 32,min = 6)
     private String password;
 
     @Column
     private String email;
 
     @Column
+    @Size(max = 11,min = 11)
     private String phoneNumber;
 
     public Long getId() {

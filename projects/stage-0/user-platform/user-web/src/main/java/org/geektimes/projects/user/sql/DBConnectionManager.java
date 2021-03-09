@@ -2,6 +2,7 @@ package org.geektimes.projects.user.sql;
 
 import org.geektimes.projects.user.domain.User;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
@@ -21,6 +22,42 @@ public class DBConnectionManager {
     @Resource(name = "bean/EntityManager")
     private EntityManager entityManager;
 
+    public static final String DROP_USERS_TABLE_DDL_SQL = "DROP TABLE users";
+
+    public static final String CREATE_USERS_TABLE_DDL_SQL = "CREATE TABLE users(" +
+            "id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+            "name VARCHAR(16) NOT NULL, " +
+            "password VARCHAR(64) NOT NULL, " +
+            "email VARCHAR(64) NOT NULL, " +
+            "phoneNumber VARCHAR(64) NOT NULL" +
+            ")";
+
+
+    @PostConstruct
+    public void createTable() {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+            Statement statement = connection.createStatement();
+            statement.execute(CREATE_USERS_TABLE_DDL_SQL);
+            System.out.println("users表被创建了");
+        } catch (SQLException sqlException) {
+            if (!sqlException.getMessage().contains("already exists")) {
+                sqlException.printStackTrace();
+            } else {
+                System.out.println("users表已存在");
+            }
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException sqlException) {
+                    //ignore
+                }
+            }
+        }
+    }
+
     public Connection getConnection() {
         Connection connection = null;
         try {
@@ -35,15 +72,6 @@ public class DBConnectionManager {
         return this.entityManager;
     }
 
-    public static final String DROP_USERS_TABLE_DDL_SQL = "DROP TABLE users";
-
-    public static final String CREATE_USERS_TABLE_DDL_SQL = "CREATE TABLE users(" +
-            "id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
-            "name VARCHAR(16) NOT NULL, " +
-            "password VARCHAR(64) NOT NULL, " +
-            "email VARCHAR(64) NOT NULL, " +
-            "phoneNumber VARCHAR(64) NOT NULL" +
-            ")";
 
     public static final String INSERT_USER_DML_SQL = "INSERT INTO users(name,password,email,phoneNumber) VALUES " +
             "('A','******','a@gmail.com','1') , " +

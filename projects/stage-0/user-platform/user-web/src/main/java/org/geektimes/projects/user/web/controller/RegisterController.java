@@ -7,8 +7,12 @@ import org.geektimes.web.mvc.controller.PageController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author zhouzy
@@ -18,6 +22,8 @@ import javax.ws.rs.Path;
 public class RegisterController implements PageController {
 
     UserService userService = ComponentContext.getInstance().getComponent("bean/UserService");
+
+    private Validator validator = ComponentContext.getInstance().getComponent("bean/Validator");
 
     @POST
     @Override
@@ -34,7 +40,14 @@ public class RegisterController implements PageController {
         user.setPassword(password);
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
-        if (userService.register(user)) {
+
+        Set<ConstraintViolation<User>> validates = validator.validate(user);
+        Optional<String> message = validates.stream().map(c ->
+                c.getPropertyPath().toString() + " " + c.getMessage()).findAny();
+        if (message.isPresent()) {
+            System.out.println("===========" + message.get() + "===========");
+            return "register.jsp";
+        } else if (userService.register(user)) {
             return "success.jsp";
         }
         return "fail.jsp";
