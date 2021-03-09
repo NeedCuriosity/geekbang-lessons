@@ -135,22 +135,33 @@ public class ComponentContext {
         return executeInContext(context -> (C) context.lookup(name));
     }
 
+    private void processPreDestory() {
+        preDestroyMap.forEach((component, methods) -> {
+            for (Method method : methods) {
+                try {
+                    ThrowableAction.execute(() -> method.invoke(component));
+                } catch (Throwable e) {
+                    System.out.println(component.getClass().getName()
+                            + " " + method.getName() + "preDestroy执行失败");
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
     public <C> C getComponent(String name) {
         return (C) componentMap.get(name);
     }
 
     public void destroy() throws RuntimeException {
-        preDestroyMap.forEach((component, methods) -> {
-            for (Method method : methods) {
-                try {
-                    ThrowableAction.execute(() -> method.invoke(component));
-                } catch (Exception e) {
-                    System.out.println(component.getClass().getName()
-                            + " " + method.getName() + "preDestroy执行失败");
-                }
+        processPreDestory();
+        try {
+            close(this.envContext);
+        } catch (Throwable e) {
+            if (!e.getMessage().contains("read only")) {
+                throw e;
             }
-        });
-        close(this.envContext);
+        }
     }
 
     protected List<String> listComponentNames(String name) {
