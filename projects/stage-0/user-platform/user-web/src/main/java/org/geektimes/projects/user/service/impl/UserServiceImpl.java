@@ -3,11 +3,9 @@ package org.geektimes.projects.user.service.impl;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.repository.DatabaseUserRepository;
 import org.geektimes.projects.user.service.UserService;
-import org.geektimes.validator.bean.validation.DelegatingValidator;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.validation.ConstraintViolation;
-import java.util.Set;
 
 /**
  * @author zhouzy
@@ -21,6 +19,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean register(User user) {
         return userRepository.save(user);
+    }
+
+    @PreDestroy
+    public void destory() {
+        System.out.println("关闭UserService");
     }
 
     @Override

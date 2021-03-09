@@ -3,6 +3,7 @@ package org.geektimes.projects.user.orm.jpa;
 import org.geektimes.projects.user.context.ComponentContext;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;

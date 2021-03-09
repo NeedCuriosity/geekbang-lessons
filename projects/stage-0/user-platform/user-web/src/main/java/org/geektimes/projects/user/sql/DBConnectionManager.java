@@ -3,6 +3,7 @@ package org.geektimes.projects.user.sql;
 import org.geektimes.projects.user.domain.User;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
@@ -56,6 +57,12 @@ public class DBConnectionManager {
                 }
             }
         }
+    }
+
+    @PreDestroy
+    public void destroy() {
+        entityManager.close();
+        System.out.println("关闭DBConnectionManager");
     }
 
     public Connection getConnection() {

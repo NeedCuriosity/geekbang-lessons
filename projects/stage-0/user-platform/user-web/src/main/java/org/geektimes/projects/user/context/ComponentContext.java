@@ -4,11 +4,14 @@ import org.geektimes.function.ThrowableAction;
 import org.geektimes.function.ThrowableFunction;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.naming.*;
 import javax.servlet.ServletContext;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -26,6 +29,7 @@ public class ComponentContext {
     private Context envContext;
     //缓存
     private Map<String, Object> componentMap = new LinkedHashMap<>();
+    private Map<Object, List<Method>> preDestroyMap = new LinkedHashMap<>();
 
 
     public static ComponentContext getInstance() {
@@ -47,8 +51,18 @@ public class ComponentContext {
             Class<?> componentClass = component.getClass();
             injectComponent(component, componentClass);
             processPostConstruct(component, componentClass);
-            //todo 销毁阶段?位置不对吧
+            List<Method> method = findPreDestroyMethod(component, componentClass);
+            if (method.size() > 0) {
+                preDestroyMap.put(component, method);
+            }
         });
+    }
+
+    private List<Method> findPreDestroyMethod(Object component, Class<?> componentClass) {
+        return Stream.of(componentClass.getMethods())
+                .filter(method -> method.getParameterCount() == 0
+                        && method.isAnnotationPresent(PreDestroy.class))
+                .collect(Collectors.toList());
     }
 
     private void processPostConstruct(Object component, Class<?> componentClass) {
@@ -126,6 +140,16 @@ public class ComponentContext {
     }
 
     public void destroy() throws RuntimeException {
+        preDestroyMap.forEach((component, methods) -> {
+            for (Method method : methods) {
+                try {
+                    ThrowableAction.execute(() -> method.invoke(component));
+                } catch (Exception e) {
+                    System.out.println(component.getClass().getName()
+                            + " " + method.getName() + "preDestroy执行失败");
+                }
+            }
+        });
         close(this.envContext);
     }
 
@@ -151,7 +175,8 @@ public class ComponentContext {
                 } else {
                     // 否则，当前名称绑定目标类型的话话，添加该名称到集合中
                     String fullName = name.startsWith("/") ? element.getName() :
-                            name + "/" + element.getName();;
+                            name + "/" + element.getName();
+                    ;
                     fullNames.add(fullName);
                 }
             }
