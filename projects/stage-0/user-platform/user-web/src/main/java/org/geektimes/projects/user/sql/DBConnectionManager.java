@@ -36,9 +36,7 @@ public class DBConnectionManager {
 
     @PostConstruct
     public void createTable() {
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             statement.execute(CREATE_USERS_TABLE_DDL_SQL);
             System.out.println("users表被创建了");
@@ -48,15 +46,8 @@ public class DBConnectionManager {
             } else {
                 System.out.println("users表已存在");
             }
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException sqlException) {
-                    //ignore
-                }
-            }
         }
+        //ignore
     }
 
     @PreDestroy

@@ -5,6 +5,7 @@ import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityTransaction;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -43,7 +44,15 @@ public class DatabaseUserRepository implements UserRepository {
 
     @Override
     public boolean save(User user) {
-        dbConnectionManager.getEntityManager().persist(user);
+        EntityTransaction transaction =
+                dbConnectionManager.getEntityManager().getTransaction();
+        try {
+            transaction.begin();
+            dbConnectionManager.getEntityManager().persist(user);
+            transaction.commit();
+        } catch (Throwable e) {
+            transaction.rollback();
+        }
         return true;
     }
 
