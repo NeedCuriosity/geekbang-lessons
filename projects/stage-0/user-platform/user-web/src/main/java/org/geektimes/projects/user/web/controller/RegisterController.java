@@ -1,6 +1,5 @@
 package org.geektimes.projects.user.web.controller;
 
-import org.geektimes.projects.user.context.ComponentContext;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.service.UserService;
 import org.geektimes.web.mvc.controller.PageController;
@@ -31,6 +30,7 @@ public class RegisterController implements PageController {
     @POST
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Throwable {
+        request.setAttribute("msg", null);
         String name = request.getParameter("userName");
         String password = request.getParameter("password");
         String email = request.getParameter("email");
@@ -43,12 +43,11 @@ public class RegisterController implements PageController {
         user.setPassword(password);
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
-
         Set<ConstraintViolation<User>> validates = validator.validate(user);
         Optional<String> message = validates.stream().map(c ->
                 c.getPropertyPath().toString() + " " + c.getMessage()).findAny();
         if (message.isPresent()) {
-            System.out.println("===========" + message.get() + "===========");
+            request.setAttribute("message", message.get());
             return "register.jsp";
         } else if (userService.register(user)) {
             return "success.jsp";

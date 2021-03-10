@@ -42,4 +42,10 @@
         <p class="mt-5 mb-3 text-muted">&copy; 2017-2021</p>
     </form>
 </div>
+<script type="text/javascript">
+    var msg = "${requestScope.message}";
+    if (msg.length > 0) {
+        alert(msg);
+    }
+</script>
 </body>
