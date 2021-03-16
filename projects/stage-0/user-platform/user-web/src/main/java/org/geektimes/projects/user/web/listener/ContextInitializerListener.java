@@ -23,7 +23,7 @@ public class ContextInitializerListener implements ServletContextListener {
             User u = new User();
             RequiredModelMBean mBean = ModelMBeanFactory.createModelMBean(u, "ObjectReference");
             MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-            ObjectName objectName = new ObjectName("org.geektimes.projects.user.domain:type=ObjectReference");
+            ObjectName objectName = new ObjectName("my-space:name=user");
             mBeanServer.registerMBean(mBean, objectName);
         } catch (Exception e) {
             e.printStackTrace();
