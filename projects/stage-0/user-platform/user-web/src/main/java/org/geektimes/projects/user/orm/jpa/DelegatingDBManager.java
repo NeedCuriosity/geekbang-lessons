@@ -1,9 +1,8 @@
 package org.geektimes.projects.user.orm.jpa;
 
-import org.geektimes.projects.user.context.ComponentContext;
+import org.geektimes.container.DefaultContainer;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -45,13 +44,13 @@ public class DelegatingDBManager implements EntityManager {
             throw new RuntimeException(e);
         }
         //处理JNDI
-        ComponentContext componentContext = ComponentContext.getInstance();
+        DefaultContainer container = DefaultContainer.getInstance();
 
         for (String propertyName : properties.stringPropertyNames()) {
             String value = properties.getProperty(propertyName);
             if (value.startsWith("@")) {
                 value = value.substring(1);
-                Object component = componentContext.getComponent(value);
+                Object component = container.getObject(value);
                 properties.put(propertyName, component);
             }
         }

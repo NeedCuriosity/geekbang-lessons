@@ -25,7 +25,6 @@
         <label for="userName" class="sr-only">用户名</label>
         <input type="text" id="userName" name="userName" class="form-control"
                placeholder="用户名" required autofocus>
-
         <label for="password" class="sr-only">Password</label>
         <input type="password" id="password" name="password" class="form-control"
                placeholder="请输入密码" required>
@@ -34,10 +33,11 @@
         <input type="email" id="email" name="email" class="form-control"
                placeholder="请输入邮箱" required>
 
-        <label for="phoneNumber" id="phoneNumber" class="sr-only">phoneNumber</label>
-        <input type="number" name="phoneNumber" class="form-control"
+        <label for="phoneNumber" class="sr-only">phoneNumber</label>
+        <input type="number" id="phoneNumber" name="phoneNumber" class="form-control"
                placeholder="请输入手机号" required>
 
+        <p style="color: red">${error}</p>
         <input class="btn btn-lg btn-primary btn-block" value="Register" type="submit">
         <p class="mt-5 mb-3 text-muted">&copy; 2017-2021</p>
     </form>

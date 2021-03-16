@@ -1,8 +1,8 @@
 package org.geektimes.projects.user.web.listener;
 
+import org.geektimes.container.DefaultContainer;
 import org.geektimes.projects.user.context.ComponentContext;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -12,9 +12,8 @@ public class ContextInitializerListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         System.out.println("===========contextInitialized==============");
         try {
-            ComponentContext componentContext = new ComponentContext();
-            ServletContext servletContext = sce.getServletContext();
-            componentContext.init(servletContext);
+            DefaultContainer container = new DefaultContainer();
+            container.init(sce.getServletContext());
         } catch (Exception e) {
             e.printStackTrace();
         }
