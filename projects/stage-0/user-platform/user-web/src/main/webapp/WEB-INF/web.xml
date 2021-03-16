@@ -19,6 +19,12 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <servlet>
+        <servlet-name>jolokia</servlet-name>
+        <servlet-class>org.jolokia.http.AgentServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
     <!-- The mapping for the default servlet -->
     <servlet-mapping>
         <servlet-name>default</servlet-name>
@@ -39,6 +45,12 @@
     <servlet-mapping>
         <servlet-name>FrontControllerServlet</servlet-name>
         <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet-mapping>
+        <servlet-name>jolokia</servlet-name>
+        <url-pattern>/jolokia/*</url-pattern>
     </servlet-mapping>
 
     <filter>
@@ -100,11 +112,11 @@
         <welcome-file>/index.jsp</welcome-file>
     </welcome-file-list>
 
-<!--    <resource-ref>-->
-<!--        <description>DB Connection</description>-->
-<!--        <res-ref-name>jdbc/UserPlatformDB</res-ref-name>-->
-<!--        <res-type>javax.sql.DataSource</res-type>-->
-<!--        <res-auth>Container</res-auth>-->
-<!--    </resource-ref>-->
+    <!--    <resource-ref>-->
+    <!--        <description>DB Connection</description>-->
+    <!--        <res-ref-name>jdbc/UserPlatformDB</res-ref-name>-->
+    <!--        <res-type>javax.sql.DataSource</res-type>-->
+    <!--        <res-auth>Container</res-auth>-->
+    <!--    </resource-ref>-->
 
 </web-app>

@@ -68,6 +68,12 @@
             <version>3.0.1-b11</version>
         </dependency>
 
+        <!-- jmx servlet -->
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-core</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
