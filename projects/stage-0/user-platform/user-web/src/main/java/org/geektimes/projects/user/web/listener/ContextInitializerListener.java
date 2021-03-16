@@ -1,5 +1,7 @@
 package org.geektimes.projects.user.web.listener;
 
+import org.eclipse.microprofile.config.Config;
+import org.geektimes.configuration.microprofile.config.DefaultConfigProviderResolver;
 import org.geektimes.container.DefaultContainer;
 import org.geektimes.projects.user.context.ComponentContext;
 import org.geektimes.projects.user.domain.User;
@@ -25,6 +27,13 @@ public class ContextInitializerListener implements ServletContextListener {
             MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
             ObjectName objectName = new ObjectName("my-space:name=user");
             mBeanServer.registerMBean(mBean, objectName);
+
+            DefaultConfigProviderResolver resolver = new DefaultConfigProviderResolver();
+            Config config = resolver.getConfig();
+            RequiredModelMBean configMBean =
+                    ModelMBeanFactory.createModelMBean(config, "ObjectReference");
+            ObjectName name = new ObjectName("org.geektimes.configuration.microprofile.config.JavaConfig:name=config");
+            mBeanServer.registerMBean(configMBean, name);
         } catch (Exception e) {
             e.printStackTrace();
         }

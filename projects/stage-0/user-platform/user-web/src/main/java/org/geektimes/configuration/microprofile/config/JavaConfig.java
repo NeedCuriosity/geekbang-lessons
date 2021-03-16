@@ -6,6 +6,7 @@ import org.eclipse.microprofile.config.ConfigValue;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.eclipse.microprofile.config.spi.Converter;
 import org.geektimes.immutable.Triple;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,13 +17,9 @@ public class JavaConfig implements Config {
      * 内部可变的集合，不要直接暴露在外面
      */
     private List<ConfigSource> configSources = new LinkedList<>();
+    private Map<Class, Converter> converterMap = new HashMap<>();
 
-    private static Comparator<ConfigSource> configSourceComparator = new Comparator<ConfigSource>() {
-        @Override
-        public int compare(ConfigSource o1, ConfigSource o2) {
-            return Integer.compare(o2.getOrdinal(), o1.getOrdinal());
-        }
-    };
+    private static Comparator<ConfigSource> configSourceComparator = Comparator.comparingInt(ConfigSource::getOrdinal);
 
     public JavaConfig() {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -30,42 +27,57 @@ public class JavaConfig implements Config {
         serviceLoader.forEach(configSources::add);
         // 排序
         configSources.sort(configSourceComparator);
+
+        ServiceLoader<Converter> converterServiceLoader = ServiceLoader.load(Converter.class);
+        Iterator<Converter> iterator = converterServiceLoader.iterator();
+        while (iterator.hasNext()) {
+            Converter converter = iterator.next();
+            Class aClass =
+                    (Class) ((ParameterizedTypeImpl) converter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
+            converterMap.put(aClass, converter);
+        }
     }
 
     @Override
     public <T> T getValue(String propertyName, Class<T> propertyType) {
         String propertyValue = getPropertyValue(propertyName);
+        Converter<T> converter = converterMap.get(propertyType);
+        if (converter != null) {
+            return converter.convert(propertyValue);
+        }
         // String 转换成目标类型
-        return null;
+        throw new RuntimeException("converter not found for type:"
+                + propertyType.getName());
     }
 
     @Override
     public ConfigValue getConfigValue(String propertyName) {
-        String propertyValue = getPropertyValue(propertyName);
+        Triple<String, String, ConfigSource> valueAndSource =
+                getValueAndSource(propertyName);
         return new ConfigValue() {
             @Override
             public String getName() {
-                return propertyName;
+                return valueAndSource.getLeft();
             }
 
             @Override
             public String getValue() {
-                return null;
+                return valueAndSource.getMiddle();
             }
 
             @Override
             public String getRawValue() {
-                return null;
+                return valueAndSource.getLeft();
             }
 
             @Override
             public String getSourceName() {
-                return null;
+                return valueAndSource.getRight().getName();
             }
 
             @Override
             public int getSourceOrdinal() {
-                return 0;
+                return valueAndSource.getRight().getOrdinal();
             }
         };
     }

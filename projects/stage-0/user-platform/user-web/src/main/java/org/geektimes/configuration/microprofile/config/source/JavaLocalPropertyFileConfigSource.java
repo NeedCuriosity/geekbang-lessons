@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.spi.ConfigSource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
  * @author zhouzy
  * @since 2021-03-16
  */
-public class JavaLocalPropertyFileConfigSource implements ConfigSource {
+public class JavaLocalPropertyFileConfigSource implements ConfigSource, Serializable {
 
     private final Map<String, String> properties;
 

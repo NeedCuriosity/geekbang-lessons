@@ -11,7 +11,8 @@ import java.util.ServiceLoader;
 
 public class DefaultConfigProviderResolver extends ConfigProviderResolver {
 
-    private List<Config> configs  = new LinkedList<>();
+    private List<Config> configs = new LinkedList<>();
+    private Boolean init = Boolean.FALSE;
 
     @Override
     public Config getConfig() {
@@ -20,15 +21,11 @@ public class DefaultConfigProviderResolver extends ConfigProviderResolver {
 
     @Override
     public Config getConfig(ClassLoader loader) {
-        ClassLoader classLoader = loader;
-        if (classLoader == null) {
-            classLoader = Thread.currentThread().getContextClassLoader();
+        if (!init) {
+            init(loader);
         }
-        ServiceLoader<Config> serviceLoader = ServiceLoader.load(Config.class, classLoader);
-        Iterator<Config> iterator = serviceLoader.iterator();
-        if (iterator.hasNext()) {
-            // 获取 Config SPI 第一个实现
-            return iterator.next();
+        if (configs.size() > 0) {
+            return configs.get(0);
         }
         throw new IllegalStateException("No Config implementation found!");
     }
@@ -46,5 +43,18 @@ public class DefaultConfigProviderResolver extends ConfigProviderResolver {
     @Override
     public void releaseConfig(Config config) {
 
+    }
+
+    private void init(ClassLoader loader) {
+        ClassLoader classLoader = loader;
+        if (classLoader == null) {
+            classLoader = Thread.currentThread().getContextClassLoader();
+        }
+        ServiceLoader<Config> serviceLoader = ServiceLoader.load(Config.class, classLoader);
+        Iterator<Config> iterator = serviceLoader.iterator();
+        if (iterator.hasNext()) {
+            configs.add(iterator.next());
+        }
+        init = Boolean.TRUE;
     }
 }

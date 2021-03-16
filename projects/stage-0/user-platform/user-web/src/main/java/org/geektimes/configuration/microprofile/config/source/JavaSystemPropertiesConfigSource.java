@@ -2,12 +2,13 @@ package org.geektimes.configuration.microprofile.config.source;
 
 import org.eclipse.microprofile.config.spi.ConfigSource;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class JavaSystemPropertiesConfigSource implements ConfigSource {
+public class JavaSystemPropertiesConfigSource implements ConfigSource, Serializable {
 
     /**
      * Java 系统属性最好通过本地变量保存，使用 Map 保存，尽可能运行期不去调整
