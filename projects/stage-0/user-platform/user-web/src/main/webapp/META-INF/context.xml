@@ -7,7 +7,7 @@
               maxActive="100" maxIdle="30" maxWait="10000"
               username="" password=""
               driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-              url="jdbc:derby:~/Databases/UserPlatformDB;create=true"/>
+              url="jdbc:derby:/Databases/UserPlatformDB;create=true"/>
 
     <Resource name="bean/DBConnectionManager"
               auth="Container"
