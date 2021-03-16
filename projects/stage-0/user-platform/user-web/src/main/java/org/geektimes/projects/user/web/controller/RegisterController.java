@@ -26,9 +26,8 @@ public class RegisterController implements RestController {
     @Resource(name = "bean/Validator")
     private Validator validator;
 
-    @Path("/register")
+    @Path("/do-register")
     @POST
-    @GET
     public String register(@Valid User user, HttpServletRequest request, HttpServletResponse response) throws Throwable {
         Set<String> errors = (Set<String>) request.getAttribute("error");
         if (errors != null && errors.size() > 0) {
@@ -38,5 +37,11 @@ public class RegisterController implements RestController {
             return "success.jsp";
         }
         return "fail.jsp";
+    }
+
+    @Path("/register")
+    @GET
+    public String route(HttpServletRequest request, HttpServletResponse response) {
+        return "register.jsp";
     }
 }

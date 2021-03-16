@@ -77,17 +77,19 @@ public class FrontControllerServlet extends HttpServlet implements Container {
                         }
                     });
             Path pathFromClass = controllerClass.getAnnotation(Path.class);
-            String requestPath = "";
-            if (pathFromClass != null) {
-                requestPath = pathFromClass.value();
-            }
             Method[] publicMethods = controllerClass.getMethods();
             // 处理方法支持的 HTTP 方法集合
+            String requestPath = "";
+            String classRequestPath = "";
+            if (pathFromClass != null) {
+                classRequestPath = pathFromClass.value();
+                controllersMapping.put(classRequestPath, controller);
+            }
             for (Method method : publicMethods) {
                 Set<String> supportedHttpMethods = findSupportedHttpMethods(method);
                 Path pathFromMethod = method.getAnnotation(Path.class);
                 if (pathFromMethod != null) {
-                    requestPath += pathFromMethod.value();
+                    requestPath = classRequestPath + pathFromMethod.value();
                     handleMethodInfoMapping.put(requestPath,
                             new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
                     controllersMapping.put(requestPath, controller);
