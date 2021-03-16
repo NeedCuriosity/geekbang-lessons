@@ -51,6 +51,7 @@ public class DatabaseUserRepository implements UserRepository {
             dbConnectionManager.getEntityManager().persist(user);
             transaction.commit();
         } catch (Throwable e) {
+            e.printStackTrace();
             transaction.rollback();
         }
         return true;

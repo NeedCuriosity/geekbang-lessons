@@ -22,8 +22,8 @@
 <div class="container">
     <form class="" method="post" action="/register">
         <h1 class="h3 mb-3 font-weight-normal">注册</h1>
-        <label for="userName" class="sr-only">用户名</label>
-        <input type="text" id="userName" name="userName" class="form-control"
+        <label for="name" class="sr-only">用户名</label>
+        <input type="text" id="name" name="name" class="form-control"
                placeholder="用户名" required autofocus>
         <label for="password" class="sr-only">Password</label>
         <input type="password" id="password" name="password" class="form-control"
