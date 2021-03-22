@@ -5,13 +5,15 @@ import org.geektimes.di.context.ComponentContext;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.annotation.HandlesTypes;
 
+@HandlesTypes(OrderedServletContextListener.class)
 public class ServletContextContainerInitializer implements OrderedServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         ServletContext servletContext = servletContextEvent.getServletContext();
-        ComponentContext componentContext = ComponentContext.getInstance();
+        ComponentContext componentContext = new ComponentContext();
         componentContext.init(servletContext);
     }
 
