@@ -1,16 +1,12 @@
 package org.geektimes.projects.user.web.listener;
 
-import org.geektimes.context.ComponentContext;
+import org.geektimes.context.OrderedServletContextListener;
+import org.geektimes.di.context.ComponentContext;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 
-/**
- * {@link ComponentContext} 初始化器
- * ContextLoaderListener
- */
-public class ComponentContextInitializerListener implements ServletContextListener {
+public class ComponentContextInitializerListener implements OrderedServletContextListener {
 
     private ServletContext servletContext;
 
@@ -27,4 +23,8 @@ public class ComponentContextInitializerListener implements ServletContextListen
 //        context.destroy();
     }
 
+    @Override
+    public int getOrder() {
+        return 99;
+    }
 }

@@ -10,34 +10,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>my-dependency-injection</artifactId>
-    <name>My Dependency Injection Framework ${revision}</name>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
+    <artifactId>my-context</artifactId>
+    <name>My Context Framework ${revision}</name>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>org.geekbang.projects</groupId>
-            <artifactId>my-context</artifactId>
-            <version>${revision}</version>
-        </dependency>
-
-        <!-- Servlet API -->
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
-
 </project>

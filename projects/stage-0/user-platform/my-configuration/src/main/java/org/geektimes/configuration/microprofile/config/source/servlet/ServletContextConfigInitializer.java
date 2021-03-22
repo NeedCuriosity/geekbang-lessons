@@ -3,18 +3,12 @@ package org.geektimes.configuration.microprofile.config.source.servlet;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.spi.ConfigBuilder;
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
+import org.geektimes.context.OrderedServletContextListener;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 
-/**
- * 如何注册当前 ServletContextListener 实现
- *
- * @see ServletConfigInitializer
- */
-public class ServletContextConfigInitializer implements ServletContextListener {
-
+public class ServletContextConfigInitializer implements OrderedServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -44,5 +38,10 @@ public class ServletContextConfigInitializer implements ServletContextListener {
 //        ClassLoader classLoader = servletContext.getClassLoader();
 //        ConfigProviderResolver configProviderResolver = ConfigProviderResolver.instance();
 //        Config config = configProviderResolver.getConfig(classLoader);
+    }
+
+    @Override
+    public int getOrder() {
+        return 300;
     }
 }

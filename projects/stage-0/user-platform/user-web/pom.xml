@@ -14,7 +14,6 @@
     <name>User Web Application ${revision}</name>
     <packaging>war</packaging>
 
-
     <dependencies>
         <dependency>
             <groupId>org.geekbang.projects</groupId>
@@ -25,6 +24,18 @@
         <dependency>
             <groupId>org.geekbang.projects</groupId>
             <artifactId>my-configuration</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.geekbang.projects</groupId>
+            <artifactId>my-context</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.geekbang.projects</groupId>
+            <artifactId>my-dependency-injection</artifactId>
             <version>${revision}</version>
         </dependency>
 

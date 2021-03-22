@@ -1,7 +1,8 @@
-package org.geektimes.context;
+package org.geektimes.di.context;
 
-import org.geektimes.function.ThrowableAction;
-import org.geektimes.function.ThrowableFunction;
+
+import org.geektimes.di.function.ThrowableAction;
+import org.geektimes.di.function.ThrowableFunction;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -133,7 +134,7 @@ public class ComponentContext {
 
     private void processPreDestroy() {
         // TODO: 通过 ShutdownHook 实现
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             // 逐一调用这
             componentsMap.values();
         }));
