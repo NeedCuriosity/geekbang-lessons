@@ -2,6 +2,7 @@ package org.geektimes.projects.user.sql;
 
 import org.geektimes.projects.user.domain.User;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
@@ -40,6 +41,22 @@ public class DBConnectionManager { // JNDI Component
 //        }
 //        return connection;
 //    }
+
+    @PostConstruct
+    public void createTable() {
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            statement.execute(CREATE_USERS_TABLE_DDL_SQL);
+            System.out.println("users表被创建了");
+        } catch (SQLException sqlException) {
+            if (!sqlException.getMessage().contains("already exists")) {
+                sqlException.printStackTrace();
+            } else {
+                System.out.println("users表已存在");
+            }
+        }
+        //ignore
+    }
 
     public EntityManager getEntityManager() {
         logger.info("当前 EntityManager 实现类：" + entityManager.getClass().getName());
