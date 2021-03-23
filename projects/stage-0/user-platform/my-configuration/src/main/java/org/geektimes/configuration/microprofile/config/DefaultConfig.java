@@ -6,6 +6,7 @@ import org.eclipse.microprofile.config.ConfigValue;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.eclipse.microprofile.config.spi.Converter;
 import org.geektimes.configuration.microprofile.config.converter.Converters;
+import org.geektimes.configuration.microprofile.config.immutable.Pair;
 import org.geektimes.configuration.microprofile.config.source.ConfigSources;
 
 import java.util.LinkedHashSet;
@@ -36,18 +37,27 @@ class DefaultConfig implements Config {
 
     @Override
     public ConfigValue getConfigValue(String propertyName) {
-        return null;
+        Pair<ConfigSource, String> pair = getSourceAndValue(propertyName);
+
+        //todo cache result
+        return new DefaultConfigValue(propertyName, pair.getRight(), pair.getLeft());
     }
 
     protected String getPropertyValue(String propertyName) {
+        return getSourceAndValue(propertyName).getRight();
+    }
+
+    protected Pair<ConfigSource, String> getSourceAndValue(String propertyName) {
         String propertyValue = null;
+        ConfigSource tmp = null;
         for (ConfigSource configSource : configSources) {
             propertyValue = configSource.getValue(propertyName);
             if (propertyValue != null) {
+                tmp = configSource;
                 break;
             }
         }
-        return propertyValue;
+        return Pair.of(tmp, propertyName);
     }
 
     @Override

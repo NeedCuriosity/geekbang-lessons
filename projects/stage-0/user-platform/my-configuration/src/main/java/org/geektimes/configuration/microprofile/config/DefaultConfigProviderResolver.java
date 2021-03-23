@@ -3,6 +3,7 @@ package org.geektimes.configuration.microprofile.config;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.spi.ConfigBuilder;
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
+import org.geektimes.context.util.ClassUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,11 +23,11 @@ public class DefaultConfigProviderResolver extends ConfigProviderResolver {
 
     @Override
     public Config getConfig(ClassLoader loader) {
-        return configsRepository.computeIfAbsent(loader, this::newConfig);
+        return configsRepository.computeIfAbsent(resolveClassLoader(loader), this::newConfig);
     }
 
     private ClassLoader resolveClassLoader(ClassLoader classLoader) {
-        return classLoader == null ? this.getClass().getClassLoader() : classLoader;
+        return classLoader == null ? ClassUtils.getClassLoader() : classLoader;
     }
 
 //    private Config loadConfig(ClassLoader classLoader) {

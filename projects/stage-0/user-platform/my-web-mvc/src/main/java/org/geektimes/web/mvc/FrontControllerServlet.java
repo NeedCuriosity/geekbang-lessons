@@ -1,6 +1,8 @@
 package org.geektimes.web.mvc;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.microprofile.config.ConfigProvider;
+import org.geektimes.configuration.microprofile.config.DefaultConfigProviderResolver;
 import org.geektimes.context.util.ClassUtils;
 import org.geektimes.di.context.ComponentContext;
 import org.geektimes.web.mvc.controller.Controller;
@@ -159,6 +161,8 @@ public class FrontControllerServlet extends HttpServlet {
                         return;
                     }
 
+                    ConfigHolder.setConfig(ConfigProvider.getConfig());
+
                     if (controller instanceof PageController) {
                         PageController pageController = PageController.class.cast(controller);
                         String viewPath = pageController.execute(request, response);
@@ -186,6 +190,8 @@ public class FrontControllerServlet extends HttpServlet {
                 } else {
                     throw new ServletException(throwable.getCause());
                 }
+            } finally {
+                ConfigHolder.reset();
             }
         }
     }
@@ -221,7 +227,7 @@ public class FrontControllerServlet extends HttpServlet {
         }
         //todo
         response.setHeader("Content-type", "text/html;charset=UTF-8");
-        response.getWriter().write(result.toString());
+        response.getWriter().write(Objects.isNull(request) ? "" : request.toString());
         response.flushBuffer();
     }
 
@@ -280,7 +286,7 @@ public class FrontControllerServlet extends HttpServlet {
 //
 //        if (cacheControl != null) {
 //            CacheControlHeaderWriter writer = new CacheControlHeaderWriter();
-//            writer.write(headers, cacheControl.value());
+//            writer.write(hseaders, cacheControl.value());
 //        }
 //    }
 }

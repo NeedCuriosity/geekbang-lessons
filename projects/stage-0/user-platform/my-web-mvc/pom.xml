@@ -29,6 +29,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.geekbang.projects</groupId>
+            <artifactId>my-configuration</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>

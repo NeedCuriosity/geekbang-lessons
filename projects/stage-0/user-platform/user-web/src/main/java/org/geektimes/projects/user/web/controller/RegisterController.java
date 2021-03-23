@@ -2,6 +2,7 @@ package org.geektimes.projects.user.web.controller;
 
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.service.UserService;
+import org.geektimes.web.mvc.ConfigHolder;
 import org.geektimes.web.mvc.controller.RestController;
 
 import javax.annotation.Resource;
@@ -34,5 +35,13 @@ public class RegisterController implements RestController {
             return "success.jsp";
         }
         return "fail.jsp";
+    }
+
+    @Path("/getValue")
+    @GET
+    public String getValue() {
+        String attribute = ConfigHolder.getAttribute("application.name");
+        System.out.println(attribute);
+        return attribute;
     }
 }
