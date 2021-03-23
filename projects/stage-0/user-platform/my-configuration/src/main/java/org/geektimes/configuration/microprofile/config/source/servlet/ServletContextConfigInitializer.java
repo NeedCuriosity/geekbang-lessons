@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.spi.ConfigBuilder;
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.geektimes.context.OrderedServletContextListener;
+import org.geektimes.context.util.ClassUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -15,7 +16,7 @@ public class ServletContextConfigInitializer implements OrderedServletContextLis
         ServletContext servletContext = servletContextEvent.getServletContext();
         ServletContextConfigSource servletContextConfigSource = new ServletContextConfigSource(servletContext);
         // 获取当前 ClassLoader
-        ClassLoader classLoader = servletContext.getClassLoader();
+        ClassLoader classLoader = ClassUtils.getClassLoader();
         ConfigProviderResolver configProviderResolver = ConfigProviderResolver.instance();
         ConfigBuilder configBuilder = configProviderResolver.getBuilder();
         // 配置 ClassLoader

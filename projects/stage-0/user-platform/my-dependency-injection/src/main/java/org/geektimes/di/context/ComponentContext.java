@@ -1,6 +1,7 @@
 package org.geektimes.di.context;
 
 
+import org.geektimes.context.util.ClassUtils;
 import org.geektimes.di.function.ThrowableAction;
 import org.geektimes.di.function.ThrowableFunction;
 
@@ -38,6 +39,10 @@ public class ComponentContext {
 
     private Context envContext; // Component Env Context
 
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
     private ClassLoader classLoader;
 
     private Map<String, Object> componentsMap = new LinkedHashMap<>();
@@ -61,7 +66,7 @@ public class ComponentContext {
         ComponentContext.servletContext = servletContext;
         servletContext.setAttribute(CONTEXT_NAME, this);
         // 获取当前 ServletContext（WebApp）ClassLoader
-        this.classLoader = servletContext.getClassLoader();
+        this.classLoader = ClassUtils.getClassLoader();
         initEnvContext();
         instantiateComponents();
         initializeComponents();

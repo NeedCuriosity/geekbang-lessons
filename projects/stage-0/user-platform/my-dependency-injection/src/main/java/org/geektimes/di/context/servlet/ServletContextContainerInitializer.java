@@ -5,10 +5,7 @@ import org.geektimes.di.context.ComponentContext;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.annotation.WebListener;
 
-
-@WebListener
 public class ServletContextContainerInitializer implements OrderedServletContextListener {
 
     @Override

@@ -1,27 +1,33 @@
 package org.geektimes.web.mvc;
 
 import org.apache.commons.lang.StringUtils;
+import org.geektimes.context.util.ClassUtils;
+import org.geektimes.di.context.ComponentContext;
 import org.geektimes.web.mvc.controller.Controller;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.mvc.controller.RestController;
-import org.geektimes.web.mvc.header.CacheControlHeaderWriter;
-import org.geektimes.web.mvc.header.annotation.CacheControl;
 
+import javax.annotation.Resource;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
+import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
+import javax.validation.Validator;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -39,6 +45,8 @@ public class FrontControllerServlet extends HttpServlet {
      */
     private Map<String, HandlerMethodInfo> handleMethodInfoMapping = new HashMap<>();
 
+    private ComponentContext componentContext = ComponentContext.getInstance();
+
     /**
      * 初始化 Servlet
      *
@@ -53,22 +61,40 @@ public class FrontControllerServlet extends HttpServlet {
      * 利用 ServiceLoader 技术（Java SPI）
      */
     private void initHandleMethods() {
-        for (Controller controller : ServiceLoader.load(Controller.class)) {
+        ComponentContext componentContext = ComponentContext.getInstance();
+        for (Controller controller : ServiceLoader.load(Controller.class, ClassUtils.getClassLoader())) {
             Class<?> controllerClass = controller.getClass();
+            Arrays.stream(controllerClass.getDeclaredFields())
+                    .filter(field -> !Modifier.isStatic(field.getModifiers())
+                            && field.isAnnotationPresent(Resource.class))
+                    .forEach(field -> {
+                        field.setAccessible(true);
+                        Resource resource = field.getAnnotation(Resource.class);
+                        try {
+                            field.set(controller, componentContext.getComponent(resource.name()));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    });
             Path pathFromClass = controllerClass.getAnnotation(Path.class);
-            String requestPath = pathFromClass.value();
             Method[] publicMethods = controllerClass.getMethods();
             // 处理方法支持的 HTTP 方法集合
+            String requestPath = "";
+            String classRequestPath = "";
+            if (pathFromClass != null) {
+                classRequestPath = pathFromClass.value();
+                controllersMapping.put(classRequestPath, controller);
+            }
             for (Method method : publicMethods) {
                 Set<String> supportedHttpMethods = findSupportedHttpMethods(method);
                 Path pathFromMethod = method.getAnnotation(Path.class);
                 if (pathFromMethod != null) {
-                    requestPath += pathFromMethod.value();
+                    requestPath = classRequestPath + pathFromMethod.value();
+                    handleMethodInfoMapping.put(requestPath,
+                            new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
+                    controllersMapping.put(requestPath, controller);
                 }
-                handleMethodInfoMapping.put(requestPath,
-                        new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
             }
-            controllersMapping.put(requestPath, controller);
         }
     }
 
@@ -149,7 +175,8 @@ public class FrontControllerServlet extends HttpServlet {
                         requestDispatcher.forward(request, response);
                         return;
                     } else if (controller instanceof RestController) {
-                        // TODO
+                        restControllerMethodHandle(request, response, controller, handlerMethodInfo);
+                        return;
                     }
 
                 }
@@ -161,6 +188,88 @@ public class FrontControllerServlet extends HttpServlet {
                 }
             }
         }
+    }
+
+    private void restControllerMethodHandle(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            Controller controller,
+                                            HandlerMethodInfo handlerMethodInfo) throws IOException, InvocationTargetException, IllegalAccessException, ServletException {
+        Class<?>[] parameterTypes = handlerMethodInfo.getHandlerMethod().getParameterTypes();
+        Object[] parameters = new Object[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> parameterType = parameterTypes[i];
+            if (parameterType.equals(HttpServletRequest.class)) {
+                parameters[i] = request;
+            } else if (parameterType.equals(HttpServletResponse.class)) {
+                parameters[i] = response;
+            } else {
+                parameters[i] = mapping(request.getParameterMap(), parameterType);
+            }
+        }
+        Set<String> errors = validateParameter(handlerMethodInfo.getHandlerMethod(), parameters);
+        if (errors.size() > 0) {
+            request.setAttribute("error", errors);
+        }
+
+        Object result = handlerMethodInfo.getHandlerMethod().invoke(controller, parameters);
+        if (result instanceof String) {
+            String str = String.class.cast(result);
+            if (str.endsWith(".jsp") || str.endsWith(".html")) {
+                request.getRequestDispatcher(str).forward(request, response);
+                return;
+            }
+        }
+        //todo
+        response.setHeader("Content-type", "text/html;charset=UTF-8");
+        response.getWriter().write(result.toString());
+        response.flushBuffer();
+    }
+
+    private Set<String> validateParameter(Method handlerMethod, Object[] parameters) {
+        Annotation[][] parameterAnnotations = handlerMethod.getParameterAnnotations();
+        Set<String> validates = new LinkedHashSet<>();
+        for (int i = 0; i < parameters.length; i++) {
+            Annotation[] annotations = parameterAnnotations[i];
+            boolean needValidation = Arrays.stream(annotations)
+                    .anyMatch(annotation -> Valid.class.isAssignableFrom(annotation.getClass()));
+
+            if (needValidation) {
+                Validator validator = componentContext.getComponent("bean/Validator");
+                Set<ConstraintViolation<Object>> validate = validator.validate(parameters[i]);
+
+                validate.forEach(c -> validates.add(c.getPropertyPath().toString() + " " + c.getMessage()));
+            }
+        }
+        return validates;
+    }
+
+    private Object mapping(Map<String, String[]> parameterMap, Class<?> parameterType) {
+        if (parameterType.isArray()
+                || Collection.class.isAssignableFrom(parameterType)
+                || Map.class.isAssignableFrom(parameterType))
+
+            //todo anyway..
+            return null;
+        try {
+            Object pojo = parameterType.getConstructor().newInstance();
+
+            BeanInfo beanInfo = Introspector.getBeanInfo(parameterType, Object.class);
+            for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+                String fieldName = propertyDescriptor.getName();
+                String[] values = parameterMap.get(fieldName);
+                if (values != null && values.length > 0) {
+                    //todo 只处理一个
+                    String fieldValue = values[0];
+                    Method writeMethod = propertyDescriptor.getWriteMethod();
+                    writeMethod.invoke(pojo, fieldValue);
+                }
+            }
+
+            return pojo;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 //    private void beforeInvoke(Method handleMethod, HttpServletRequest request, HttpServletResponse response) {

@@ -1,5 +1,7 @@
 package org.geektimes.context;
 
+import org.geektimes.context.util.ClassUtils;
+
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
@@ -19,6 +21,7 @@ import java.util.Set;
 public class Initializer implements ServletContainerInitializer {
     @Override
     public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
+        ClassUtils.getClassLoader();
         List<OrderedServletContextListener> listeners = new LinkedList<>();
         Comparator<OrderedServletContextListener> comparator = Comparator.comparingInt(OrderedServletContextListener::getOrder);
         try {
