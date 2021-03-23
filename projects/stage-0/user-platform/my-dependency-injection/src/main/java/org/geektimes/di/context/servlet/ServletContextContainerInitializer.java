@@ -5,9 +5,10 @@ import org.geektimes.di.context.ComponentContext;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.annotation.HandlesTypes;
+import javax.servlet.annotation.WebListener;
 
-@HandlesTypes(OrderedServletContextListener.class)
+
+@WebListener
 public class ServletContextContainerInitializer implements OrderedServletContextListener {
 
     @Override
