@@ -2,13 +2,18 @@ package org.geektimes.projects.user.web.listener;
 
 import org.geektimes.di.context.ComponentContext;
 import org.geektimes.projects.user.domain.User;
+import org.geektimes.projects.user.management.ModelMBeanFactory;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.modelmbean.RequiredModelMBean;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.lang.management.ManagementFactory;
 import java.util.logging.Logger;
 
 /**
@@ -26,6 +31,7 @@ public class TestingListener implements ServletContextListener {
         dbConnectionManager.getConnection();
         testPropertyFromServletContext(sce.getServletContext());
         testPropertyFromJNDI(context);
+        testMBean();
         testUser(dbConnectionManager.getEntityManager());
         logger.info("所有的 JNDI 组件名称：[");
         context.getComponentNames().forEach(logger::info);
@@ -45,6 +51,7 @@ public class TestingListener implements ServletContextListener {
     }
 
     private void testUser(EntityManager entityManager) {
+        //todo 这tm persist没生效啊?!
         User user = new User();
         user.setName("小马哥");
         user.setPassword("******");
@@ -57,6 +64,19 @@ public class TestingListener implements ServletContextListener {
         Object obj = entityManager.createNativeQuery("select * from users order by id desc",
                 User.class).getResultList().get(0);
         System.out.println(obj);
+    }
+
+    private void testMBean() {
+        try {
+            User u = new User();
+            RequiredModelMBean mBean = ModelMBeanFactory.createModelMBean(u, "ObjectReference");
+            MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+            ObjectName objectName = new ObjectName("my-space:name=user");
+            mBeanServer.registerMBean(mBean, objectName);
+            logger.info("MBean[" + objectName.toString() + "] registered..");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

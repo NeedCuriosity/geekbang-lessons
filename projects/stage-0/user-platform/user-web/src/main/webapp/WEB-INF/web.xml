@@ -47,9 +47,20 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <servlet>
+        <servlet-name>jolokia</servlet-name>
+        <servlet-class>org.jolokia.http.AgentServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>FrontControllerServlet</servlet-name>
         <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>jolokia</servlet-name>
+        <url-pattern>/jolokia/*</url-pattern>
     </servlet-mapping>
 
     <filter>
