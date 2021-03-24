@@ -61,9 +61,7 @@ public class TestingListener implements ServletContextListener {
         transaction.begin();
         entityManager.persist(user);
         transaction.commit();
-        Object obj = entityManager.createNativeQuery("select * from users order by id desc",
-                User.class).getResultList().get(0);
-        System.out.println(obj);
+//        System.out.println(entityManager.find(User.class, user.getId()));
     }
 
     private void testMBean() {

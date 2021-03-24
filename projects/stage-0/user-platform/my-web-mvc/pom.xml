@@ -20,18 +20,21 @@
             <groupId>org.geekbang.projects</groupId>
             <artifactId>my-context</artifactId>
             <version>${revision}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.geekbang.projects</groupId>
             <artifactId>my-dependency-injection</artifactId>
             <version>${revision}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.geekbang.projects</groupId>
             <artifactId>my-configuration</artifactId>
             <version>${revision}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

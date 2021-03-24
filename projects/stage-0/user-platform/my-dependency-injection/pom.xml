@@ -23,6 +23,7 @@
             <groupId>org.geekbang.projects</groupId>
             <artifactId>my-context</artifactId>
             <version>${revision}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Servlet API -->
