@@ -3,17 +3,16 @@ package org.geektimes.configuration.microprofile.config.source.servlet;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.spi.ConfigBuilder;
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
-import org.geektimes.context.OrderedServletContextListener;
+import org.geektimes.context.OrderedComponentInitializer;
 import org.geektimes.context.util.ClassUtils;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletException;
 
-public class ServletContextConfigInitializer implements OrderedServletContextListener {
+public class ServletContextConfigInitializer implements OrderedComponentInitializer {
 
     @Override
-    public void contextInitialized(ServletContextEvent servletContextEvent) {
-        ServletContext servletContext = servletContextEvent.getServletContext();
+    public void onStartup(ServletContext servletContext) throws ServletException {
         ServletContextConfigSource servletContextConfigSource = new ServletContextConfigSource(servletContext);
         // 获取当前 ClassLoader
         ClassLoader classLoader = ClassUtils.getClassLoader();
@@ -31,14 +30,6 @@ public class ServletContextConfigInitializer implements OrderedServletContextLis
         Config config = configBuilder.build();
         // 注册 Config 关联到当前 ClassLoader
         configProviderResolver.registerConfig(config, classLoader);
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
-//        ServletContext servletContext = servletContextEvent.getServletContext();
-//        ClassLoader classLoader = servletContext.getClassLoader();
-//        ConfigProviderResolver configProviderResolver = ConfigProviderResolver.instance();
-//        Config config = configProviderResolver.getConfig(classLoader);
     }
 
     @Override

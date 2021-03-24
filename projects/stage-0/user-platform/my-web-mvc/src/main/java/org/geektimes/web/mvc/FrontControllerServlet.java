@@ -227,7 +227,7 @@ public class FrontControllerServlet extends HttpServlet {
         }
         //todo
         response.setHeader("Content-type", "text/html;charset=UTF-8");
-        response.getWriter().write(Objects.isNull(request) ? "" : request.toString());
+        response.getWriter().write(Objects.isNull(result) ? "" : result.toString());
         response.flushBuffer();
     }
 

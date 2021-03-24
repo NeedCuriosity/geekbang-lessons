@@ -1,22 +1,17 @@
 package org.geektimes.di.context.servlet;
 
-import org.geektimes.context.OrderedServletContextListener;
+import org.geektimes.context.OrderedComponentInitializer;
 import org.geektimes.di.context.ComponentContext;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletException;
 
-public class ServletContextContainerInitializer implements OrderedServletContextListener {
+public class ServletContextContainerInitializer implements OrderedComponentInitializer {
 
     @Override
-    public void contextInitialized(ServletContextEvent servletContextEvent) {
-        ServletContext servletContext = servletContextEvent.getServletContext();
+    public void onStartup(ServletContext servletContext) throws ServletException {
         ComponentContext componentContext = new ComponentContext();
         componentContext.init(servletContext);
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
     }
 
     @Override

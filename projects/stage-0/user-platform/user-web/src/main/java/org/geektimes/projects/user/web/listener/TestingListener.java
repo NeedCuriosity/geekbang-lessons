@@ -54,7 +54,9 @@ public class TestingListener implements ServletContextListener {
         transaction.begin();
         entityManager.persist(user);
         transaction.commit();
-        System.out.println(entityManager.find(User.class, user.getId()));
+        Object obj = entityManager.createNativeQuery("select * from users order by id desc",
+                User.class).getResultList().get(0);
+        System.out.println(obj);
     }
 
     @Override

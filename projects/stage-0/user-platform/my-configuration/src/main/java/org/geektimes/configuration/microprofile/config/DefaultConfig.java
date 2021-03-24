@@ -57,7 +57,7 @@ class DefaultConfig implements Config {
                 break;
             }
         }
-        return Pair.of(tmp, propertyName);
+        return Pair.of(tmp, propertyValue);
     }
 
     @Override
