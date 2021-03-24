@@ -2,7 +2,7 @@ package org.geektimes.projects.user.web.controller;
 
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.service.UserService;
-import org.geektimes.web.mvc.ConfigHolder;
+import org.geektimes.web.mvc.RequestHolder;
 import org.geektimes.web.mvc.controller.RestController;
 
 import javax.annotation.Resource;
@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -40,7 +41,9 @@ public class RegisterController implements RestController {
     @Path("/getValue")
     @GET
     public String getValue() {
-        String attribute = ConfigHolder.getAttribute("application.name");
+        String value = Objects.isNull(RequestHolder.getParameter("value")) ?
+                "application.name" : RequestHolder.getParameter("value");
+        String attribute = RequestHolder.getAttribute(value);
         System.out.println(attribute);
         return attribute;
     }

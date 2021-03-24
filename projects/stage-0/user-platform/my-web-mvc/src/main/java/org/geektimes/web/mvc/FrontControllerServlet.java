@@ -2,7 +2,6 @@ package org.geektimes.web.mvc;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.microprofile.config.ConfigProvider;
-import org.geektimes.configuration.microprofile.config.DefaultConfigProviderResolver;
 import org.geektimes.context.util.ClassUtils;
 import org.geektimes.di.context.ComponentContext;
 import org.geektimes.web.mvc.controller.Controller;
@@ -161,7 +160,7 @@ public class FrontControllerServlet extends HttpServlet {
                         return;
                     }
 
-                    ConfigHolder.setConfig(ConfigProvider.getConfig());
+                    RequestHolder.setConfig(ConfigProvider.getConfig(), request);
 
                     if (controller instanceof PageController) {
                         PageController pageController = PageController.class.cast(controller);
@@ -191,7 +190,7 @@ public class FrontControllerServlet extends HttpServlet {
                     throw new ServletException(throwable.getCause());
                 }
             } finally {
-                ConfigHolder.reset();
+                RequestHolder.reset();
             }
         }
     }
