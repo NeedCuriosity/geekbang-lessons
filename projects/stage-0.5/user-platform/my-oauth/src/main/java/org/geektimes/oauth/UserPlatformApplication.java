@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 @SpringBootApplication
 @RestController
@@ -16,6 +17,9 @@ public class UserPlatformApplication {
 
     @GetMapping("/user")
     public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
+        if (Objects.isNull(principal)) {
+            return Collections.emptyMap();
+        }
         return Collections.singletonMap("name", principal.getAttribute("name"));
     }
 
