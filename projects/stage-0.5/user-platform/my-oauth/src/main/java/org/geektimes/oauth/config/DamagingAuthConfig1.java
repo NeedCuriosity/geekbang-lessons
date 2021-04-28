@@ -11,8 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @since 2021-04-21
  */
 @Configuration
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
-public class DamagingAuthConfig extends WebSecurityConfigurerAdapter {
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+public class DamagingAuthConfig1 extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

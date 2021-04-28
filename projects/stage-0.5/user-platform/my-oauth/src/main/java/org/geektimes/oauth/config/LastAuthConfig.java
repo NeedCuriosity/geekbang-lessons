@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * 合并httpSecurity用
  * 后装载WebSecurityConfigurerAdapter的filter优先
  *
  * @author zhouzy
@@ -26,10 +27,10 @@ import java.util.List;
  */
 @Configuration
 @Order
-public class DefaultAuthConfig extends WebSecurityConfigurerAdapter {
+public class LastAuthConfig extends WebSecurityConfigurerAdapter {
 
     /**
-     * todo filter/matcher/configurer 去重？ exceptionHandler如何合并？
+     * todo filter/matcher/configurer 如何去重？ exceptionHandler如何合并？
      * todo 按match情况类型区分多个chain？能做到么
      *
      * @param webSecurity
@@ -52,7 +53,7 @@ public class DefaultAuthConfig extends WebSecurityConfigurerAdapter {
                 List<Filter> subFilters = getField(httpSecurity, "filters");
                 LinkedHashMap<Class, List<SecurityConfigurer>> subConfigurers = getField(httpSecurity, "configurers");
                 subConfigurers.forEach((klass, list) -> {
-                    //todo 不同类型多个configurer处理逻辑不同？
+                    //todo 不同类型多个configurer处理逻辑可以不同
                     if (!configurers.containsKey(klass)) {
                         configurers.put(klass, list);
                     }
@@ -71,6 +72,7 @@ public class DefaultAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //不可覆盖权限写在这里
         http.authorizeRequests(a -> a.antMatchers("/", "/error", "/webjars/**")
                 .permitAll());
         http.csrf().and().cors();

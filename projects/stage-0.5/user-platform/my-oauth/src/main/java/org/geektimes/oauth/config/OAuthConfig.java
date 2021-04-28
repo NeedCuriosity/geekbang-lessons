@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
  * @since 2021-04-21
  */
 @Configuration
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class OAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Override
